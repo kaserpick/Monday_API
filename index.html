@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monday API - Create Item</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<button id="create-item">Create New Item</button>
+<div id="create-output"></div>
+
+<script>
+  const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ1NDE4NjkzOCwiYWFpIjoxMSwidWlkIjo1MjY1NDk5NywiaWFkIjoiMjAyNS0wMS0wNlQxODoyOToxOC43NTZaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjAxMDA1NzQsInJnbiI6InVzZTEifQ.ceU-R0rtgG16_NIrcgpRn_Ol5bM9UzuHZy8p-iG8_uE';  // Replace with your API key
+  const boardId = '8139051903';  // Replace with your board ID
+  const groupId = '174848246';  // Replace with the group ID where you want to create the item
+
+  // Function to create an item
+  function createItem() {
+    $.ajax({
+      url: "https://api.monday.com/v2",
+      type: "POST",
+      headers: {
+        "Authorization": apiKey,
+        "Content-Type": "application/json"
+      },
+      data: JSON.stringify({
+        query: `mutation {
+          create_item(board_id: ${boardId}, group_id: "${groupId}", item_name: "New Task") {
+            id
+            name
+          }
+        }`
+      }),
+      success: function(response) {
+        console.log(response);
+        $('#create-output').html('<p>Item Created: ' + response.data.create_item.name + '</p>');
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // Trigger the function when the button is clicked
+  $('#create-item').click(createItem);
+</script>
+
+</body>
+</html>
