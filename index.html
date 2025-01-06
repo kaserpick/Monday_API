@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monday API - Create Item</title>
+  <title>Monday API - Fetch Data</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
-<button id="create-item">Create New Item</button>
-<div id="create-output"></div>
+<button id="fetch-data">Fetch Board Data</button>
+<div id="output"></div>
 
 <script>
-  const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ1NDE4NjkzOCwiYWFpIjoxMSwidWlkIjo1MjY1NDk5NywiaWFkIjoiMjAyNS0wMS0wNlQxODoyOToxOC43NTZaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjAxMDA1NzQsInJnbiI6InVzZTEifQ.ceU-R0rtgG16_NIrcgpRn_Ol5bM9UzuHZy8p-iG8_uE';  // Replace with your API key
-  const boardId = '8139051903';  // Replace with your board ID
-  const groupId = '174848246';  // Replace with the group ID where you want to create the item
+  // Replace with your API Key
+  const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ1NDE5NjQyMSwiYWFpIjoxMSwidWlkIjo1MjY1NDk5NywiaWFkIjoiMjAyNS0wMS0wNlQxODo0NjoyNS43OTZaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjAxMDA1NzQsInJnbiI6InVzZTEifQ.LOBWyhSNAuL_AtMIZwXdYI3pm7FQhK3QFvtaWhNxtN0';
+  const boardId = '8139051903';  // Replace with your actual board ID
 
-  // Function to create an item
-  function createItem() {
+  // Function to make the API request
+  function fetchBoardData() {
     $.ajax({
       url: "https://api.monday.com/v2",
       type: "POST",
@@ -26,16 +26,25 @@
         "Content-Type": "application/json"
       },
       data: JSON.stringify({
-        query: `mutation {
-          create_item(board_id: ${boardId}, group_id: "${groupId}", item_name: "New Task") {
-            id
+        query: `{
+          boards(ids: ${boardId}) {
             name
+            items {
+              id
+              name
+            }
           }
         }`
       }),
       success: function(response) {
         console.log(response);
-        $('#create-output').html('<p>Item Created: ' + response.data.create_item.name + '</p>');
+        let items = response.data.boards[0].items;
+        let output = '<ul>';
+        items.forEach(item => {
+          output += `<li>${item.name}</li>`;
+        });
+        output += '</ul>';
+        $('#output').html(output);
       },
       error: function(error) {
         console.log(error);
@@ -44,7 +53,7 @@
   }
 
   // Trigger the function when the button is clicked
-  $('#create-item').click(createItem);
+  $('#fetch-data').click(fetchBoardData);
 </script>
 
 </body>
